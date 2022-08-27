@@ -22,10 +22,12 @@ const initScenes = () => Scenes.map(createScene);
 const config = {
   type: Phaser.AUTO,
   ...SHARED_CONFIG,
+  pixelArt: true,
   physics :{
     default: 'arcade',
   },
-  scene:initScenes()
+  scene:initScenes(),
+  parent: 'insertingGame'
 }
 
 new Phaser.Game(config);

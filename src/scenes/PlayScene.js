@@ -14,9 +14,26 @@ class PlayScene extends BaseScene{
         this.flapvelocity = 300;
         this.score = 0;
         this.scoreText = '';
+
+        this.currentDifficulty = 'easy'
+        this.difficulties = {
+            'easy' : {
+                pipeHorizontalDistanceRange: [300, 350],
+                pipeVerticalDistanceRange: [150, 200]
+            },
+            'normal' : {
+                pipeHorizontalDistanceRange: [280, 330],
+                pipeVerticalDistanceRange: [140, 190]
+            },
+            'hard' : {
+                pipeHorizontalDistanceRange: [300, 350],
+                pipeVerticalDistanceRange: [120, 170]
+            }
+        }
     }
 
     create() {
+        this.currentDifficulty = 'easy'
         super.create();
         this.createBird();
         this.createPipes();
@@ -25,6 +42,15 @@ class PlayScene extends BaseScene{
         this.createPause();
         this.handleInput();
         this.listenToEvents(); 
+
+        this.anims.create({
+            key: 'fly',
+            frames: this.anims.generateFrameNumbers('bird', {start: 8, end: 15}),
+            frameRate: 8, 
+            repeat: -1
+        })
+
+        this.bird.play('fly');
     }
     update() {
         this.checkGameStatus();
@@ -57,7 +83,13 @@ class PlayScene extends BaseScene{
     }
 
     createBird() {
-        this.bird = this.physics.add.sprite(this.config.startPosition.x, this.config.startPosition.y, 'bird').setOrigin(0);
+        this.bird = this.physics.add.sprite(this.config.startPosition.x, this.config.startPosition.y, 'bird')
+            .setFlipX(true)
+            .setScale(3)
+            .setBodySize(this.bird.width, this.bird.height)
+            .setOrigin(0);
+
+        this.bird.setBodySize(this.bird.width, this.bird.height - 8);
         this.bird.body.gravity.y = 600;
         this.bird.setCollideWorldBounds(true);
     }
@@ -114,10 +146,11 @@ class PlayScene extends BaseScene{
     }
 
     placePipe(uPipe, lPipe) {
+        const difficulty = this.difficulties[this.currentDifficulty];
         const rightMostX = this.getRightMostPipe();
-        const pipeVerticalDistance = Phaser.Math.Between(...this.pipeVerticalDistanceRange);
+        const pipeVerticalDistance = Phaser.Math.Between(...difficulty.pipeVerticalDistanceRange);
         const pipeVerticalPosition = Phaser.Math.Between(0 + 20, this.config.height - 20 - pipeVerticalDistance);
-        const pipeHorizontalDistance = Phaser.Math.Between(...this.pipeHorizontalDistanceRange);
+        const pipeHorizontalDistance = Phaser.Math.Between(...difficulty.pipeHorizontalDistanceRange);
         uPipe.x = rightMostX + pipeHorizontalDistance;
         uPipe.y = pipeVerticalPosition;
       
